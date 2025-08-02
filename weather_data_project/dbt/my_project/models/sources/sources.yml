@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: dev
+    database: mydatabase      
+    schema: dev                
+    tables:
+      - name: raw_weather_data
+        description: Raw weather data ingested from the API
+        columns:
+          - name: city
+            description: Name of the city
+          - name: temperature
+            description: Recorded temperature in Fahrenheit
+          - name: weather_description
+            description: Description of the weather
+          - name: wind_speed
+            description: Speed of the wind in mph
+          - name: time
+            description: Timestamp of the weather report
+          - name: time_inserted
+            description: Time the data was inserted into the database
+          - name: utc_offset
+            description: Time offset from UTC in seconds

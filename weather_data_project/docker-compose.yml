@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: pg_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"  
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - my-network
+    
+
+  dbt:
+    container_name: dbt_container
+    image: ghcr.io/dbt-labs/dbt-postgres:1.9.latest
+    volumes:
+      - ./dbt/my_project:/user/app
+    working_dir: /user/app
+    environment:
+      - DBT_PROFILES_DIR= "/root/.dbt"
+    depends_on:
+      - postgres
+    networks:
+      - my-network
+    command: run
+  
+  streamlit:
+    container_name: streamlit_app
+    build:
+      context: ./streamlit_app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./streamlit_app:/app
+    depends_on:
+      - postgres
+    networks:
+      - my-network
+
+
+networks:
+  my-network:
+    driver: bridge
