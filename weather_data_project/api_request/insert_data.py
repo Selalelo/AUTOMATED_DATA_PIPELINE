@@ -1,16 +1,24 @@
 import psycopg2
 from api_request import fetch_weather
 from datetime import datetime, timedelta, timezone
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+DB_HOST = os.getenv("DB_HOST")
+PORT = os.getenv("PORT", 5432)  # Default to 5432 if not set
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_USER = os.getenv("DB_USER")
+DB_NAME = os.getenv("DB_NAME")
 def connect_db():
     print("Connecting to database...")
     try:
         conn = psycopg2.connect(
-            host='localhost',
-            user='user',
-            port=5432,
-            dbname='mydatabase',
-            password='password'
+            host= DB_HOST,
+            user= DB_USER,
+            port= PORT,
+            dbname= DB_NAME,
+            password= DB_PASSWORD
         )
         print("Connection successful")
         return conn
@@ -46,6 +54,7 @@ def create_table(conn):
 
 def insert_records(conn, data):
     print('Inserting data...')
+    temp_celsius = (data["main"]["temp"] - 32) * 5.0/9.0  # Convert Fahrenheit to Celsius
     try:
         cursor = conn.cursor()
 
@@ -65,7 +74,7 @@ def insert_records(conn, data):
             ) VALUES (%s, %s, %s, %s, %s, NOW(), %s)
             """, (
                 data["name"],
-                data["main"]["temp"],
+                temp_celsius,
                 data["weather"][0]["description"],
                 str(data["wind"]["speed"]),
                 utc_time, 
@@ -82,15 +91,16 @@ def insert_records(conn, data):
 
 def main():
     city = 'Johannesburg'
+    conn = None  # Initialize conn variable
     try:
         data = fetch_weather(city)
         conn = connect_db()
         create_table(conn)
         insert_records(conn, data)
     except Exception as e:
-        print(f'An error occured during execution: {e}')
+        print(f'An error occurred during execution: {e}')
     finally:
-        if conn in locals():
+        if conn is not None:  # Better way to check if conn exists
             conn.close()
             print('Database connection closed')
 

@@ -38,12 +38,12 @@ st.sidebar.header("🔗 Database Connection")
 
 # Default values for your Docker Compose setup
 default_config = {
-    'host': os.getenv('DB_HOST', 'postgres'),
-    'port': os.getenv('DB_PORT', '5432'),
-    'database': os.getenv('DB_NAME', 'mydatabase'),
-    'username': os.getenv('DB_USER', 'user'),
-    'password': os.getenv('DB_PASSWORD', 'password'),
-    'schema': os.getenv('DB_SCHEMA', 'dev')
+    'host': os.getenv('DB_HOST'),
+    'port': os.getenv('DB_PORT'),
+    'database': os.getenv('DB_NAME'),
+    'username': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'schema': os.getenv('DB_SCHEMA',)
 }
 
 # Connection settings in sidebar
@@ -159,7 +159,7 @@ def create_sample_data():
 
 # Main title
 st.title("🌤️ Weather Analytics Dashboard")
-st.markdown("Real-time analysis of weather patterns from your dbt models")
+st.markdown("Real-time analysis of weather patterns from dbt models")
 
 # Connection status and data loading
 use_sample_data = st.sidebar.checkbox("Use Sample Data (Demo Mode)", value=False)
@@ -350,7 +350,7 @@ elif page == "⏰ Hourly Trends":
     with col2:
         st.metric("Avg Temperature", f"{df['avg_temp'].mean():.1f}°C")
     with col3:
-        st.metric("Avg Wind Speed", f"{df['avg_wind'].mean():.1f} km/h")
+        st.metric("Avg Wind Speed", f"{df['avg_wind'].mean():.1f} m/s")
     with col4:
         st.metric("Temperature Range", f"{df['avg_temp'].max() - df['avg_temp'].min():.1f}°C")
     
@@ -366,7 +366,7 @@ elif page == "⏰ Hourly Trends":
         fig.add_trace(go.Scatter(x=df['hour'], y=df['avg_wind'], name='Wind Speed',
                                 line=dict(color='blue')), row=2, col=1)
         fig.update_yaxes(title_text="Temperature (°C)", row=1, col=1)
-        fig.update_yaxes(title_text="Wind Speed (km/h)", row=2, col=1)
+        fig.update_yaxes(title_text="Wind Speed (m/s)", row=2, col=1)
         fig.update_layout(height=600, title_text="Hourly Weather Trends Over Time")
     
     elif analysis_type == "Hourly Patterns":
@@ -385,13 +385,13 @@ elif page == "⏰ Hourly Trends":
     elif analysis_type == "Temperature vs Wind":
         fig = px.scatter(df, x='avg_temp', y='avg_wind', color='hour_of_day',
                         title="Temperature vs Wind Speed Relationship",
-                        labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (km/h)'})
+                        labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (m/s)'})
     
     else:  # Correlation Analysis
         correlation = df['avg_temp'].corr(df['avg_wind'])
         fig = px.scatter(df, x='avg_temp', y='avg_wind',
                         title=f"Temperature vs Wind Speed (Correlation: {correlation:.3f})",
-                        labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (km/h)'},
+                        labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (m/s)'},
                         trendline="ols")
     
     st.plotly_chart(fig, use_container_width=True)
@@ -414,7 +414,7 @@ elif page == "📅 Daily Summaries":
     with col3:
         st.metric("Total Observations", f"{df['observations'].sum():,}")
     with col4:
-        st.metric("Avg Wind Speed", f"{df['avg_wind_speed'].mean():.1f} km/h")
+        st.metric("Avg Wind Speed", f"{df['avg_wind_speed'].mean():.1f} m/s")
     
     # Visualization options
     chart_type = st.selectbox("Visualization:", 
@@ -445,7 +445,7 @@ elif page == "📅 Daily Summaries":
         fig = px.bar(df, x='date', y='avg_wind_speed',
                     title="Daily Average Wind Speed", color='avg_wind_speed',
                     color_continuous_scale='Blues')
-        fig.update_layout(yaxis_title="Wind Speed (km/h)")
+        fig.update_layout(yaxis_title="Wind Speed (m/s)")
     
     else:  # Observations Count
         fig = px.bar(df, x='date', y='observations',
@@ -520,7 +520,7 @@ elif page == "🔄 Multi-View Analysis":
 
 # Footer
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 🔧 Your Docker Setup")
+st.sidebar.markdown("### 🔧 Docker Setup")
 st.sidebar.markdown("""
 **Current Configuration:**
 - Host: postgres (container)

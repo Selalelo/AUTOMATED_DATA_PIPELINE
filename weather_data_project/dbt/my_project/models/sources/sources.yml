@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: dev
-    database: mydatabase      
+    database: postgres     
     schema: dev                
     tables:
       - name: raw_weather_data
