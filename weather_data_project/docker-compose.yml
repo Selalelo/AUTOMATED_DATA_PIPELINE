@@ -1,18 +1,4 @@
 services:
-  dbt:
-      container_name: dbt_container
-      image: ghcr.io/dbt-labs/dbt-postgres:1.9.latest
-      volumes:
-        - ./dbt/my_project:/user/app
-        - ./dbt/.dbt = "/root/.dbt"
-      working_dir: /user/app
-      environment:
-        - DBT_PROFILES_DIR=/root/.dbt"
-      env_file:
-        - .env
-      networks:
-        - my-network
-      command: debug
   
   streamlit:
     container_name: streamlit_app
@@ -22,10 +8,4 @@ services:
       - "8501:8501"
     volumes:
       - ./streamlit_app:/app
-    networks:
-      - my-network
 
-
-networks:
-  my-network:
-    driver: bridge

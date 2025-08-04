@@ -10,6 +10,13 @@ from sqlalchemy import create_engine
 import warnings
 warnings.filterwarnings('ignore')
 
+# Try to import statsmodels for trendlines (optional)
+try:
+    import statsmodels.api as sm
+    STATSMODELS_AVAILABLE = True
+except ImportError:
+    STATSMODELS_AVAILABLE = False
+
 # Set page config
 st.set_page_config(
     page_title="Weather Analytics Dashboard",
@@ -36,14 +43,14 @@ st.markdown("""
 # Database connection configuration
 st.sidebar.header("🔗 Database Connection")
 
-# Default values for your Docker Compose setup
+# Use your Supabase database credentials as defaults
 default_config = {
-    'host': os.getenv('DB_HOST'),
-    'port': os.getenv('DB_PORT'),
-    'database': os.getenv('DB_NAME'),
-    'username': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'schema': os.getenv('DB_SCHEMA',)
+    'host': 'aws-0-ap-southeast-1.pooler.supabase.com',
+    'port': '5432',
+    'database': 'postgres',
+    'username': 'postgres.cttvqsevvcbgeycisazn',
+    'password': 'H+ugkM7Qx9Pn&Cq',
+    'schema': 'dev'
 }
 
 # Connection settings in sidebar
@@ -70,6 +77,13 @@ def get_database_connection():
     try:
         connection_string = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
         engine = create_engine(connection_string)
+        
+        # Test the connection
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            result = conn.execute(text("SELECT 1"))
+            result.fetchone()  # Consume the result
+        
         return engine
     except Exception as e:
         st.error(f"Database connection failed: {e}")
@@ -302,7 +316,13 @@ elif page == "☁️ Weather Descriptions":
     with col1:
         chart_type = st.selectbox("Chart Type:", ["Bar Chart", "Horizontal Bar", "Pie Chart", "Treemap"])
     with col2:
-        top_n = st.slider("Show Top N:", 5, len(df), min(10, len(df)))
+        max_n = min(10, len(df))
+        min_n = min(5, len(df))
+        if len(df) > 1:
+            top_n = st.slider("Show Top N:", min_n, len(df), max_n)
+        else:
+            top_n = 1
+            st.write(f"Showing: {top_n} record(s)")
     
     # Create visualization
     df_filtered = df.head(top_n)
@@ -389,10 +409,18 @@ elif page == "⏰ Hourly Trends":
     
     else:  # Correlation Analysis
         correlation = df['avg_temp'].corr(df['avg_wind'])
-        fig = px.scatter(df, x='avg_temp', y='avg_wind',
-                        title=f"Temperature vs Wind Speed (Correlation: {correlation:.3f})",
-                        labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (m/s)'},
-                        trendline="ols")
+        
+        # Create scatter plot with optional trendline
+        if STATSMODELS_AVAILABLE:
+            fig = px.scatter(df, x='avg_temp', y='avg_wind',
+                            title=f"Temperature vs Wind Speed (Correlation: {correlation:.3f})",
+                            labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (m/s)'},
+                            trendline="ols")
+        else:
+            fig = px.scatter(df, x='avg_temp', y='avg_wind',
+                            title=f"Temperature vs Wind Speed (Correlation: {correlation:.3f})",
+                            labels={'avg_temp': 'Temperature (°C)', 'avg_wind': 'Wind Speed (m/s)'})
+            st.info("💡 Install 'statsmodels' package to see trendlines: `pip install statsmodels`")
     
     st.plotly_chart(fig, use_container_width=True)
 
@@ -520,14 +548,12 @@ elif page == "🔄 Multi-View Analysis":
 
 # Footer
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 🔧 Docker Setup")
-st.sidebar.markdown("""
+st.sidebar.markdown("### 🗄️ Database Info")
+st.sidebar.markdown(f"""
 **Current Configuration:**
-- Host: postgres (container)
-- Database: mydatabase
-- User: user
-- Schema: dev (dbt target)
-
-**Container Network:** my-network
+- Host: {db_host}
+- Database: {db_name}
+- Schema: {db_schema}
+- Connection: {'✅ Active' if 'engine' in locals() and engine is not None else '❌ Inactive'}
 """)
-st.sidebar.markdown("*Connected to live dbt models*")
+st.sidebar.markdown("*Connected to Supabase PostgreSQL*")
