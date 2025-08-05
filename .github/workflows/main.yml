@@ -96,8 +96,8 @@ jobs:
         POSTGRES_SCHEMA: ${{ secrets.DB_SCHEMA }}
         POSTGRES_SSLMODE: require
       run: |
-        working-directory: ./AUTOMATED_DATA_PIPELINE
-        python -m weather_data_project.api_request.insert_data
+        cd weather_data_project/api_request
+        python insert_data
 
 
     - name: Run dbt debug
