@@ -97,6 +97,7 @@ jobs:
         POSTGRES_SSLMODE: require
       run: |
         cd weather_data_project/api_request
+        python api_request.py
         python insert_data.py
 
     - name: Run dbt debug
