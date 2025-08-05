@@ -85,21 +85,21 @@ jobs:
         "
 
     - name: Run API request and insert data
-  env:
-    RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}  # Changed from API_KEY
-    API_URL: ${{ secrets.API_URL }}
-    DB_HOST: ${{ secrets.DB_HOST }}            # Changed from POSTGRES_HOST
-    PORT: ${{ secrets.PORT }}                  # Changed from POSTGRES_PORT  
-    DB_USER: ${{ secrets.DB_USER }}            # Changed from POSTGRES_USER
-    DB_PASSWORD: ${{ secrets.DB_PASSWORD }}    # Changed from POSTGRES_PASSWORD
-    DB_NAME: ${{ secrets.DB_NAME }}            # Changed from POSTGRES_DB
-    DB_SCHEMA: ${{ secrets.DB_SCHEMA }}        # This one looks unused in your code
-    POSTGRES_SSLMODE: require
-    PYTHONPATH: ${{ github.workspace }}/weather_data_project
-  run: |
-    cd weather_data_project/api_request
-    python api_request.py
-    python insert_data.py
+      env:
+        RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}  # Changed from API_KEY
+        API_URL: ${{ secrets.API_URL }}
+        DB_HOST: ${{ secrets.DB_HOST }}            # Changed from POSTGRES_HOST
+        PORT: ${{ secrets.PORT }}                  # Changed from POSTGRES_PORT  
+        DB_USER: ${{ secrets.DB_USER }}            # Changed from POSTGRES_USER
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}    # Changed from POSTGRES_PASSWORD
+        DB_NAME: ${{ secrets.DB_NAME }}            # Changed from POSTGRES_DB
+        DB_SCHEMA: ${{ secrets.DB_SCHEMA }}        # This one looks unused in your code
+        POSTGRES_SSLMODE: require
+        PYTHONPATH: ${{ github.workspace }}/weather_data_project
+      run: |
+        cd weather_data_project/api_request
+        python api_request.py
+        python insert_data.py
 
     - name: Run dbt debug
       run: |
