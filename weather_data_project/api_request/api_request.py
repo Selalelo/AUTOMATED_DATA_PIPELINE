@@ -1,46 +1,44 @@
-import os
 import requests
+import os
 
-def fetch_weather(city='New York'):
-    print(f"Fetching weather for {city}")
-    
-    # Get API key from environment
+def fetch_weather(city):
     api_key = os.getenv("RAPIDAPI_KEY")
-    
-    if not api_key:
-        raise EnvironmentError("RAPIDAPI_KEY not found in environment variables")
-    
-    print(f"API key found: {api_key[:10]}..." if len(api_key) > 10 else "API key found")
-    
-    url = "https://open-weather13.p.rapidapi.com/city"
-    querystring = {"city": city, "lang": "EN", "units": "metric"}
-    headers = {
-        "x-rapidapi-key": api_key,
-        "x-rapidapi-host": "open-weather13.p.rapidapi.com"
-    }
-    
-    try:
-        response = requests.get(url, headers=headers, params=querystring)
-        data = response.json()
-        if response.status_code != 200:
-            print(f"API error: {data.get('message', 'Unknown error')}")
-            print(f"Status code: {response.status_code}")
-            print(f"Response: {data}")
-            return None
-        print("API response received successfully")
-        return data
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
-        raise
+    api_url = os.getenv("API_URL")
 
-if __name__ == "__main__":
-    # Test the function when run directly
-    city = 'Johannesburg'
+    if not api_key or not api_url:
+        raise ValueError("API key or API URL not set")
+
+    headers = {
+        "X-RapidAPI-Key": api_key,
+        "X-RapidAPI-Host": api_url.replace("https://", "").split("/")[0],
+    }
+
+    params = {"q": city}
+
+    print(f"Fetching weather for {city}")
+    print(f"API key found: {api_key[:10]}...")
+
     try:
-        data = fetch_weather(city)
-        if data:
-            print(f"Weather data for {city}: {data}")
-        else:
-            print("Failed to fetch weather data")
-    except Exception as e:
-        print(f"Error: {e}")
+        response = requests.get(api_url, headers=headers, params=params)
+        print(f"Response status: {response.status_code}")
+
+        if response.status_code != 200:
+            print(f"Error from API: {response.status_code} - {response.text}")
+            return None
+
+        if not response.text.strip():
+            print("Empty response body.")
+            return None
+
+        data = response.json()
+        print(f"Weather data for {city}: {data}")
+        return data
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"JSON decode error: {e}")
+        print(f"Raw response: {response.text}")
+        return None
