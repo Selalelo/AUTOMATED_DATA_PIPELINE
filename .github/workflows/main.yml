@@ -95,6 +95,7 @@ jobs:
         POSTGRES_DB: ${{ secrets.DB_NAME }}
         POSTGRES_SCHEMA: ${{ secrets.DB_SCHEMA }}
         POSTGRES_SSLMODE: require
+        PYTHONPATH: ${{ github.workspace }}/weather_data_project
       run: |
         cd weather_data_project/api_request
         python api_request.py
