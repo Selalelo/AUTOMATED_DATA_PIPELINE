@@ -8,12 +8,8 @@ import psycopg2
 import os
 from sqlalchemy import create_engine
 import warnings
-from dotenv import load_dotenv
 
 warnings.filterwarnings('ignore')
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Try to import statsmodels for trendlines (optional)
 try:
@@ -48,16 +44,16 @@ st.markdown("""
 # Database connection configuration
 st.sidebar.header("🔗 Database Connection")
 
-# Get database configuration from environment variables
+# Get database configuration from Streamlit secrets
 def get_db_config():
-    """Get database configuration from environment variables with fallbacks"""
+    """Get database configuration from Streamlit secrets"""
     return {
-        'host': os.getenv('DB_HOST', 'localhost'),
-        'port': os.getenv('DB_PORT', '5432'),
-        'database': os.getenv('DB_NAME', 'postgres'),
-        'username': os.getenv('DB_USER', 'postgres'),
-        'password': os.getenv('DB_PASSWORD', ''),
-        'schema': os.getenv('DB_SCHEMA', 'public')
+        'host': st.secrets["DB_HOST"],
+        'port': st.secrets["DB_PORT"],
+        'database': st.secrets["DB_NAME"],
+        'username': st.secrets["DB_USER"],
+        'password': st.secrets["DB_PASSWORD"],
+        'schema': st.secrets.get("DB_SCHEMA", "public")
     }
 
 # Load configuration
@@ -70,57 +66,32 @@ with st.sidebar.expander("Database Settings", expanded=False):
     st.write(f"**Database:** {config['database']}")
     st.write(f"**Username:** {config['username']}")
     st.write(f"**Schema:** {config['schema']}")
-    st.write("**Password:** " + ("✅ Loaded from .env" if config['password'] else "❌ Not found in .env"))
-    
-    # Option to override connection settings (for development)
-    st.markdown("---")
-    override_settings = st.checkbox("Override with manual settings", value=False)
-    
-    if override_settings:
-        st.warning("⚠️ Manual override enabled - not recommended for production!")
-        config['host'] = st.text_input("Host", value=config['host'])
-        config['port'] = st.text_input("Port", value=config['port'])
-        config['database'] = st.text_input("Database", value=config['database'])
-        config['username'] = st.text_input("Username", value=config['username'])
-        config['password'] = st.text_input("Password", value="", type="password")
-        config['schema'] = st.text_input("Schema", value=config['schema'])
+    st.write("**Password:** ✅ Loaded from secrets")
 
-# Table name configuration (also from environment variables)
+# Table name configuration from secrets
 st.sidebar.subheader("📋 dbt Model Names")
 
 def get_table_config():
-    """Get table names from environment variables with fallbacks"""
+    """Get table names from Streamlit secrets"""
     return {
-        'descriptions': os.getenv('TABLE_WEATHER_DESCRIPTIONS', 'weather_condition_frequency'),
-        'hourly': os.getenv('TABLE_HOURLY_TRENDS', 'fct_hourly_weather_trend'),
-        'daily': os.getenv('TABLE_DAILY_SUMMARY', 'fct_daily_weather_summary')
+        'descriptions': st.secrets.get("TABLE_WEATHER_DESCRIPTIONS", "weather_condition_frequency"),
+        'hourly': st.secrets.get("TABLE_HOURLY_TRENDS", "fct_hourly_weather_trend"),
+        'daily': st.secrets.get("TABLE_DAILY_SUMMARY", "fct_daily_weather_summary")
     }
 
 table_names = get_table_config()
 
-# Show table configuration with option to override
+# Show table configuration
 with st.sidebar.expander("Table Configuration", expanded=False):
     st.write(f"**Weather Descriptions:** {table_names['descriptions']}")
     st.write(f"**Hourly Trends:** {table_names['hourly']}")
     st.write(f"**Daily Summary:** {table_names['daily']}")
-    
-    override_tables = st.checkbox("Override table names", value=False)
-    if override_tables:
-        table_names['descriptions'] = st.text_input("Weather Descriptions Table", value=table_names['descriptions'])
-        table_names['hourly'] = st.text_input("Hourly Trends Table", value=table_names['hourly'])
-        table_names['daily'] = st.text_input("Daily Summary Table", value=table_names['daily'])
 
 # Database connection function
 @st.cache_resource
 def get_database_connection():
-    """Create database connection using environment variables"""
+    """Create database connection using Streamlit secrets"""
     try:
-        # Check if required environment variables are set
-        if not config['password']:
-            st.error("❌ Database password not found in environment variables!")
-            st.info("Please check your .env file contains DB_PASSWORD")
-            return None
-        
         connection_string = f"postgresql://{config['username']}:{config['password']}@{config['host']}:{config['port']}/{config['database']}"
         engine = create_engine(connection_string)
         
@@ -134,6 +105,148 @@ def get_database_connection():
     except Exception as e:
         st.error(f"Database connection failed: {e}")
         return None
+
+# Data loading functions (same as before)
+@st.cache_data
+def load_weather_descriptions(_engine, table_name, schema):
+    """Load weather descriptions from database"""
+    try:
+        query = f"""
+        SELECT weather_description, frequency 
+        FROM {schema}.{table_name} 
+        ORDER BY frequency DESC
+        """
+        return pd.read_sql(query, _engine)
+    except Exception as e:
+        st.error(f"Error loading weather descriptions: {e}")
+        return None
+
+@st.cache_data
+def load_hourly_data(_engine, table_name, schema):
+    """Load hourly weather data from database"""
+    try:
+        query = f"""
+        SELECT hour, avg_temp, avg_wind 
+        FROM {schema}.{table_name} 
+        ORDER BY hour
+        """
+        df = pd.read_sql(query, _engine)
+        df['hour'] = pd.to_datetime(df['hour'])
+        return df
+    except Exception as e:
+        st.error(f"Error loading hourly data: {e}")
+        return None
+
+@st.cache_data
+def load_daily_data(_engine, table_name, schema):
+    """Load daily weather summary from database"""
+    try:
+        query = f"""
+        SELECT date, observations, avg_temp, min_temp, max_temp, avg_wind_speed 
+        FROM {schema}.{table_name} 
+        ORDER BY date
+        """
+        df = pd.read_sql(query, _engine)
+        df['date'] = pd.to_datetime(df['date'])
+        return df
+    except Exception as e:
+        st.error(f"Error loading daily data: {e}")
+        return None
+
+# Create sample data function for demo (same as before)
+@st.cache_data
+def create_sample_data():
+    """Create sample data for demonstration"""
+    descriptions = pd.DataFrame({
+        'weather_description': [
+            'Clear sky', 'Few clouds', 'Scattered clouds', 'Broken clouds',
+            'Overcast clouds', 'Light rain', 'Moderate rain', 'Heavy rain',
+            'Thunderstorm', 'Snow', 'Mist', 'Fog', 'Drizzle'
+        ],
+        'frequency': [1250, 980, 750, 620, 450, 380, 180, 95, 120, 80, 200, 150, 300]
+    })
+    
+    hours = pd.date_range('2024-01-01', periods=24*7, freq='H')
+    np.random.seed(42)
+    base_temp = 15 + 10 * np.sin(np.arange(len(hours)) * 2 * np.pi / 24)
+    noise = np.random.normal(0, 2, len(hours))
+    hourly = pd.DataFrame({
+        'hour': hours,
+        'avg_temp': np.round(base_temp + noise, 2),
+        'avg_wind': np.round(np.random.uniform(5, 25, len(hours)), 2)
+    })
+    
+    dates = pd.date_range('2024-01-01', periods=30, freq='D')
+    daily = pd.DataFrame({
+        'date': dates,
+        'observations': np.random.randint(20, 50, len(dates)),
+        'avg_temp': np.round(np.random.uniform(10, 25, len(dates)), 2),
+        'min_temp': np.round(np.random.uniform(5, 15, len(dates)), 2),
+        'max_temp': np.round(np.random.uniform(20, 35, len(dates)), 2),
+        'avg_wind_speed': np.round(np.random.uniform(8, 20, len(dates)), 2)
+    })
+    
+    return descriptions, hourly, daily
+
+# Main title
+st.title("🌤️ Weather Analytics Dashboard")
+st.markdown("Real-time analysis of weather patterns from dbt models")
+
+# Environment status check
+st.sidebar.markdown("---")
+st.sidebar.subheader("🔧 Environment Status")
+
+# Check if all required secrets are available
+required_secrets = ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']
+missing_secrets = [secret for secret in required_secrets if secret not in st.secrets]
+
+if missing_secrets:
+    st.sidebar.error(f"❌ Missing secrets: {', '.join(missing_secrets)}")
+    use_sample_data = True
+else:
+    st.sidebar.success("✅ All required secrets loaded")
+    use_sample_data = st.sidebar.checkbox("Use Sample Data (Demo Mode)", value=False)
+
+if use_sample_data:
+    st.sidebar.success("Using sample data for demonstration")
+    sample_desc, sample_hourly, sample_daily = create_sample_data()
+    data = {
+        'descriptions': sample_desc,
+        'hourly': sample_hourly,
+        'daily': sample_daily
+    }
+else:
+    # Try to connect to database
+    engine = get_database_connection()
+    
+    if engine is not None:
+        st.sidebar.success("✅ Database connected successfully!")
+        
+        # Load data from database
+        data = {}
+        
+        with st.spinner("Loading data from database..."):
+            # Check which tables exist and load data
+            for key, table_name in table_names.items():
+                if table_name.strip():  # Only if table name is provided
+                    try:
+                        if key == 'descriptions':
+                            data[key] = load_weather_descriptions(engine, table_name, config['schema'])
+                        elif key == 'hourly':
+                            data[key] = load_hourly_data(engine, table_name, config['schema'])
+                        elif key == 'daily':
+                            data[key] = load_daily_data(engine, table_name, config['schema'])
+                        
+                        if data[key] is not None and len(data[key]) > 0:
+                            st.sidebar.success(f"✅ {key.title()} data loaded: {len(data[key])} records")
+                        else:
+                            st.sidebar.warning(f"⚠️ {key.title()} table empty or not found")
+                    except Exception as e:
+                        st.sidebar.error(f"❌ Error loading {key}: {str(e)}")
+    else:
+        st.sidebar.error("❌ Database connection failed")
+        st.warning("Please check your secrets configuration or enable 'Use Sample Data' to see the dashboard.")
+        st.stop()
 
 # Data loading functions
 @st.cache_data
