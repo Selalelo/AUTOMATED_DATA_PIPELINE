@@ -8,7 +8,7 @@ on:
 
 env:
   PYTHON_VERSION: '3.9'
-  DBT_PROFILES_DIR: ${{ github.workspace }}/weather_data_project/my_project
+  #DBT_PROFILES_DIR: ${{ github.workspace }}/weather_data_project/my_project
 
 jobs:
   weather-data-pipeline:
