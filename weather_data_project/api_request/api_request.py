@@ -31,6 +31,6 @@ def fetch_weather(city='New York'):
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
         raise
-fetch_weather()
+
 
 
