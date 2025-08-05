@@ -42,7 +42,7 @@ jobs:
     - name: Create dbt profiles directory
       run: |
         mkdir -p ~/.dbt
-        mkdir -p ${{ env.DBT_PROFILES_DIR }}
+        
 
     - name: Create dbt profiles.yml
       run: |
