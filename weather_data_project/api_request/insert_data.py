@@ -1,5 +1,5 @@
 import psycopg2
-from api_request import fetch_weather
+from .api_request import fetch_weather
 from datetime import datetime, timedelta, timezone
 import os
 #from dotenv import load_dotenv
