@@ -8,7 +8,6 @@ on:
 
 env:
   PYTHON_VERSION: '3.9'
-  DBT_PROFILES_DIR: ${{ github.workspace }}/weather_data_project/my_project
 
 jobs:
   weather-data-pipeline:
@@ -39,13 +38,9 @@ jobs:
           pip install -r weather_data_project/streamlit_app/requirements.txt
         fi
 
-    - name: Create dbt profiles directory
+    - name: Create dbt profiles.yml in default location
       run: |
         mkdir -p ~/.dbt
-        mkdir -p ${{ env.DBT_PROFILES_DIR }}
-
-    - name: Create dbt profiles.yml
-      run: |
         cat > ~/.dbt/profiles.yml << EOF
         my_project:
           target: dev
@@ -86,14 +81,14 @@ jobs:
 
     - name: Run API request and insert data
       env:
-        RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}  # Changed from API_KEY
+        RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         API_URL: ${{ secrets.API_URL }}
-        DB_HOST: ${{ secrets.DB_HOST }}            # Changed from POSTGRES_HOST
-        PORT: ${{ secrets.PORT }}                  # Changed from POSTGRES_PORT  
-        DB_USER: ${{ secrets.DB_USER }}            # Changed from POSTGRES_USER
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}    # Changed from POSTGRES_PASSWORD
-        DB_NAME: ${{ secrets.DB_NAME }}            # Changed from POSTGRES_DB
-        DB_SCHEMA: ${{ secrets.DB_SCHEMA }}        # This one looks unused in your code
+        DB_HOST: ${{ secrets.DB_HOST }}
+        PORT: ${{ secrets.PORT }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_SCHEMA: ${{ secrets.DB_SCHEMA }}
         POSTGRES_SSLMODE: require
         PYTHONPATH: ${{ github.workspace }}/weather_data_project
       run: |
@@ -130,7 +125,6 @@ jobs:
       run: |
         cd weather_data_project/my_project
         dbt docs generate
-
 
     - name: Commit and push updated data (if needed)
       run: |
