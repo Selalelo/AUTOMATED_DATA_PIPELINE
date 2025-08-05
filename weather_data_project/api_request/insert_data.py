@@ -75,7 +75,7 @@ def insert_records(conn, data):
         cursor = conn.cursor()
 
         # Handle temperature conversion - check if it's already in Celsius or Fahrenheit
-        temp = data["main"]["temp"]
+        temp = (data["main"]["temp"] - 32)*5/9
         # If the API returns Celsius (which it should with units=metric), use it directly
         temp_celsius = temp
         
