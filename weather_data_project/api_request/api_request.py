@@ -1,9 +1,9 @@
 import os
 import requests
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 # Load API key from .env
-load_dotenv()
+#load_dotenv()
 
 api_key = os.getenv("RAPIDAPI_KEY")
 
