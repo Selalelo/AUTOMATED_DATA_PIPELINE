@@ -86,7 +86,7 @@ jobs:
 
     - name: Run API request and insert data
       env:
-        API_KEY: ${{ secrets.API_KEY }}
+        API_KEY: ${{ secrets.RAPIDAPI_KEY }}
         API_URL: ${{ secrets.API_URL }}
         POSTGRES_HOST: ${{ secrets.DB_HOST }}
         POSTGRES_PORT: ${{ secrets.PORT }}
