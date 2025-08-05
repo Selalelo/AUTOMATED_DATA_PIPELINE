@@ -2,9 +2,10 @@ import psycopg2
 from api_request import fetch_weather
 from datetime import datetime, timedelta, timezone
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
+
 DB_HOST = os.getenv("DB_HOST")
 PORT = os.getenv("PORT", 5432)  # Default to 5432 if not set
 DB_PASSWORD = os.getenv("DB_PASSWORD")
