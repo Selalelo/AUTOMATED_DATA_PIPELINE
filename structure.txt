@@ -1,0 +1,36 @@
+.
+├── LICENSE
+├── logs
+│   └── dbt.log
+├── structure.txt
+└── weather_data_project
+    ├── api_request
+    │   ├── api_request.py
+    │   └── insert_data.py
+    ├── dbt_project.yml
+    ├── logs
+    │   └── dbt.log
+    ├── my_project
+    │   ├── README.md
+    │   ├── analyses
+    │   ├── dbt_project.yml
+    │   ├── logs
+    │   ├── macros
+    │   ├── models
+    │   ├── seeds
+    │   ├── snapshots
+    │   ├── target
+    │   └── tests
+    ├── pgdata  [error opening dir]
+    ├── streamlit_app
+    │   ├── app.py
+    │   └── requirements.txt
+    └── target
+        ├── graph.gpickle
+        ├── graph_summary.json
+        ├── manifest.json
+        ├── partial_parse.msgpack
+        ├── run_results.json
+        └── semantic_manifest.json
+
+17 directories, 17 files
