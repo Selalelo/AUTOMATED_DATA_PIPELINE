@@ -50,7 +50,7 @@ jobs:
               sslmode: require
         EOF
 
-    - name: Test Superbase connection
+    - name: Test Superbasennection
       run: |
         python -c "
         import psycopg2
@@ -93,10 +93,30 @@ jobs:
         cd weather_data_project/my_project
         dbt debug
 
+    - name: Run dbt deps
+      run: |
+        cd weather_data_project/my_project
+        dbt deps || echo "No packages to install"
+
+    - name: Run dbt seed
+      run: |
+        cd weather_data_project/my_project
+        dbt seed || echo "No seeds to run"
+
     - name: Run dbt run
       run: |
         cd weather_data_project/my_project
         dbt run
+
+    - name: Run dbt test
+      run: |
+        cd weather_data_project/my_project
+        dbt test || echo "Some tests failed, but continuing..."
+
+    - name: Generate dbt docs
+      run: |
+        cd weather_data_project/my_project
+        dbt docs generate
 
     - name: Commit and push updated data (if needed)
       run: |
