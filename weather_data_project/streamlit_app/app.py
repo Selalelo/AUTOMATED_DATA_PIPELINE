@@ -226,19 +226,11 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("🔧 Environment Status")
 
 # Check if .env file exists
-env_file_exists = os.path.exists('.env')
-required_vars = ['DB_HOST', 'DB_PASSWORD', 'DB_USER', 'DB_NAME']
-missing_vars = [var for var in required_vars if not os.getenv(var)]
-
-if env_file_exists:
-    st.sidebar.success("✅ .env file found")
-else:
-    st.sidebar.error("❌ .env file not found")
+required_vars = ['host', 'user', 'password', 'dbname']
+missing_vars = [var for var in required_vars if var not in st.secrets["database"]]
 
 if missing_vars:
-    st.sidebar.error(f"❌ Missing variables: {', '.join(missing_vars)}")
-else:
-    st.sidebar.success("✅ All required variables loaded")
+    st.error(f"Missing required secrets: {', '.join(missing_vars)}")
 
 # Connection status and data loading
 use_sample_data = st.sidebar.checkbox("Use Sample Data (Demo Mode)", value=bool(missing_vars))
@@ -643,6 +635,5 @@ st.sidebar.markdown(f"""
 - Database: {config['database']}
 - Schema: {config['schema']}
 - Connection: {'✅ Active' if 'engine' in locals() and engine is not None else '❌ Inactive'}
-- Environment: {'✅ .env loaded' if env_file_exists else '❌ No .env file'}
 """)
 st.sidebar.markdown("*Using secure environment variable configuration*")
