@@ -78,8 +78,8 @@ with st.sidebar.expander("Database Settings", expanded=False):
     st.write("**Password:** " + ("✅ Loaded from .env" if config['password'] else "❌ Not found in .env"))
     
     # Option to override connection settings (for development)
-    st.markdown("---")
-    override_settings = st.checkbox("Override with manual settings", value=False)
+    # st.markdown("---")
+    # override_settings = st.checkbox("Override with manual settings", value=False)
     
     if override_settings:
         st.warning("⚠️ Manual override enabled - not recommended for production!")
