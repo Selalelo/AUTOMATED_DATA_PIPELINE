@@ -8,12 +8,11 @@ import psycopg2
 import os
 from sqlalchemy import create_engine
 import warnings
-from dotenv import load_dotenv
+
 
 warnings.filterwarnings('ignore')
 
 # Load environment variables from .env file
-load_dotenv()
 
 # Try to import statsmodels for trendlines (optional)
 try:
@@ -50,15 +49,16 @@ st.sidebar.header("🔗 Database Connection")
 
 # Get database configuration from environment variables
 def get_db_config():
-    """Get database configuration from environment variables with fallbacks"""
+    """Get database configuration from Streamlit secrets"""
     return {
-        'host': os.getenv('DB_HOST', 'localhost'),
-        'port': os.getenv('DB_PORT', '5432'),
-        'database': os.getenv('DB_NAME', 'postgres'),
-        'username': os.getenv('DB_USER', 'postgres'),
-        'password': os.getenv('DB_PASSWORD', ''),
-        'schema': os.getenv('DB_SCHEMA', 'public')
+        'host': st.secrets["database"]["host"],
+        'port': st.secrets["database"]["port"],
+        'database': st.secrets["database"]["dbname"],
+        'username': st.secrets["database"]["user"],
+        'password': st.secrets["database"]["password"],
+        'schema': st.secrets["database"]["schema"]
     }
+
 
 # Load configuration
 config = get_db_config()
