@@ -79,16 +79,16 @@ with st.sidebar.expander("Database Settings", expanded=False):
     
     # Option to override connection settings (for development)
     st.markdown("---")
-    override_settings = st.checkbox("Override with manual settings", value=False)
+    # override_settings = st.checkbox("Override with manual settings", value=False)
     
-    if override_settings:
-        st.warning("⚠️ Manual override enabled - not recommended for production!")
-        config['host'] = st.text_input("Host", value=config['host'])
-        config['port'] = st.text_input("Port", value=config['port'])
-        config['database'] = st.text_input("Database", value=config['database'])
-        config['username'] = st.text_input("Username", value=config['username'])
-        config['password'] = st.text_input("Password", value="", type="password")
-        config['schema'] = st.text_input("Schema", value=config['schema'])
+    # if override_settings:
+    #     st.warning("⚠️ Manual override enabled - not recommended for production!")
+    #     config['host'] = st.text_input("Host", value=config['host'])
+    #     config['port'] = st.text_input("Port", value=config['port'])
+    #     config['database'] = st.text_input("Database", value=config['database'])
+    #     config['username'] = st.text_input("Username", value=config['username'])
+    #     config['password'] = st.text_input("Password", value="", type="password")
+    #     config['schema'] = st.text_input("Schema", value=config['schema'])
 
 # Table name configuration (also from environment variables)
 st.sidebar.subheader("📋 dbt Model Names")
