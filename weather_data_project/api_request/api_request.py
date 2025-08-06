@@ -1,44 +1,22 @@
 import requests
 import os
 
-def fetch_weather(city):
-    api_key = os.getenv("RAPIDAPI_KEY")
-    api_url = os.getenv("API_URL")
 
-    if not api_key or not api_url:
-        raise ValueError("API key or API URL not set")
-
+def fetch_weather(city, lang="EN"):
+    """Get weather data for a city"""
+    api_key = os.getenv('RAPIDAPI_KEY')
+    if not api_key:
+        raise Exception("RAPIDAPI_KEY environment variable not set")
+    
+    url = "https://open-weather13.p.rapidapi.com/city"
+    
+    querystring = {"city": city, "lang": lang}
+    
     headers = {
-        "X-RapidAPI-Key": api_key,
-        "X-RapidAPI-Host": api_url.replace("https://", "").split("/")[0],
+        "x-rapidapi-key": api_key,
+        "x-rapidapi-host": "open-weather13.p.rapidapi.com"
     }
-
-    params = {"q": city}
-
-    print(f"Fetching weather for {city}")
-    print(f"API key found: {api_key[:10]}...")
-
-    try:
-        response = requests.get(api_url, headers=headers, params=params)
-        print(f"Response status: {response.status_code}")
-
-        if response.status_code != 200:
-            print(f"Error from API: {response.status_code} - {response.text}")
-            return None
-
-        if not response.text.strip():
-            print("Empty response body.")
-            return None
-
-        data = response.json()
-        print(f"Weather data for {city}: {data}")
-        return data
-
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
-        return None
-
-    except ValueError as e:
-        print(f"JSON decode error: {e}")
-        print(f"Raw response: {response.text}")
-        return None
+    
+    response = requests.get(url, headers=headers, params=querystring)
+    
+    return response.json()
