@@ -48,14 +48,14 @@ This project demonstrates an end-to-end modern data pipeline that ingests weathe
 ## 🗂️ Data Architecture
 
 Below is the high-level data architecture for this project, showing the data flow from the live weather API source to the PostgreSQL database, through dbt transformations, and into the Streamlit dashboard for final consumption:
-
+![Data Architecture](weather_data_project/documents/data_arc.png)
 
 ---
 ## 🚀 Live Demo
 
 Click the image below to view the **live Streamlit dashboard**:
 
-[![Weather Analytics Dashboard](https://raw.githubusercontent.com/your-username/weather_data_project/main/demo/demo_thumbnail.png)](https://automated-data-pipeline.streamlit.app/)
+[![Weather Analytics Dashboard](weather_data_project/documents/demo.png)](https://automated-data-pipeline.streamlit.app/)
 
 
 ## 📁 Project File Structure
