@@ -45,6 +45,48 @@ This project demonstrates an end-to-end modern data pipeline that ingests weathe
 
 ---
 
+## 🗂️ Data Architecture
+
+Below is the high-level data architecture for this project, showing the data flow from the live weather API source to the PostgreSQL database, through dbt transformations, and into the Streamlit dashboard for final consumption:
+
+
+---
+
+## 📁 Project File Structure
+```plaintext
+AUTOMATED_DATA_PIPELINE
+|
+├── .github                                               # GitHub Actions for CI/CD
+│   └── workflows
+│       └── main.yml                                      # Automation (fetch data, dbt runs, etc.)
+├── weather_data_project
+│   ├── api_request                                       # Python scripts to fetch & insert data
+│   │   ├── __init__.py
+│   │   ├── api_request.py
+│   │   ├── insert_data.py
+│   │   └── requirements.txt
+│   ├── my_project                                        # dbt project folder
+│   │   ├── models
+│   │   │   ├── mart
+│   │   │   │   ├── fct_daily_weather_summary.sql
+│   │   │   │   ├── fct_hourly_weather_trend.sql
+│   │   │   │   └── weather_condition_frequency.sql
+│   │   │   ├── sources
+│   │   │   │   └── sources.yml
+│   │   │   └── staging
+│   │   │       └── staging.sql
+│   │   ├── README.md
+│   │   └── dbt_project.yml                               
+│   ├── streamlit_app                                     # Streamlit app
+│   │   ├── .streamlit
+│   │   │   └── config.toml
+│   │   ├── app.py
+│   │   └── requirements.txt
+│   └── dbt_project.yml
+├── LICENSE
+└── readme.md
+```
+---
 ## 🛡️ License
 
 This project is licensed under the **MIT License**. You are free to use, modify, and share this project with proper attribution.
