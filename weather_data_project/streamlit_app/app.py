@@ -44,6 +44,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Refresh data button
+if st.sidebar.button("🔄 Refresh Data"):
+    st.cache_data.clear()
+    st.rerun()
+
 # Database connection configuration
 st.sidebar.header("🔗 Database Connection")
 
@@ -284,10 +289,6 @@ page = st.sidebar.selectbox(
     ["🏠 Overview", "☁️ Weather Descriptions", "⏰ Hourly Trends", "📅 Daily Summaries", "🔄 Multi-View Analysis"]
 )
 
-# Refresh data button
-if st.sidebar.button("🔄 Refresh Data"):
-    st.cache_data.clear()
-    st.rerun()
 
 # Overview Page
 if page == "🏠 Overview":
