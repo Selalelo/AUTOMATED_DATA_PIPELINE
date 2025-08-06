@@ -51,6 +51,12 @@ Below is the high-level data architecture for this project, showing the data flo
 
 
 ---
+## 🚀 Live Demo
+
+Click the image below to view the **live Streamlit dashboard**:
+
+[![Weather Analytics Dashboard](https://raw.githubusercontent.com/your-username/weather_data_project/main/demo/demo_thumbnail.png)](https://automated-data-pipeline.streamlit.app/)
+
 
 ## 📁 Project File Structure
 ```plaintext
