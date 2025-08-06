@@ -1,7 +1,6 @@
 .env
 .venv/
 secrets.toml
-# Don't commit these folders
 venv/
 env/
 .venv/
