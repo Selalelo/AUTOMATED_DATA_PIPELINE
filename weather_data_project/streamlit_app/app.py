@@ -230,11 +230,6 @@ env_file_exists = os.path.exists('.env')
 required_vars = ['DB_HOST', 'DB_PASSWORD', 'DB_USER', 'DB_NAME']
 missing_vars = [var for var in required_vars if not os.getenv(var)]
 
-if env_file_exists:
-    st.sidebar.success("✅ .env file found")
-else:
-    st.sidebar.error("❌ .env file not found")
-
 if missing_vars:
     st.sidebar.error(f"❌ Missing variables: {', '.join(missing_vars)}")
 else:
