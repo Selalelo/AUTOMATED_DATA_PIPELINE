@@ -397,13 +397,16 @@ elif page == "☁️ Weather Descriptions":
     with col1:
         chart_type = st.selectbox("Chart Type:", ["Bar Chart", "Horizontal Bar", "Pie Chart", "Treemap"])
     with col2:
-        max_n = min(10, len(df))
-        min_n = min(5, len(df))
-        if len(df) > 1:
-            top_n = st.slider("Show Top N:", min_n, len(df), max_n)
-        else:
+        # Fixed logic for slider bounds
+        if len(df) == 1:
             top_n = 1
-            st.write(f"Showing: {top_n} record(s)")
+            st.write("Showing: 1 record")
+        else:
+            min_n = min(5, len(df))
+            max_n = min(10, len(df))
+            # Ensure min_value <= value <= max_value
+            default_value = min(max_n, max(min_n, min_n))
+            top_n = st.slider("Show Top N:", min_value=min_n, max_value=len(df), value=default_value)
     
     # Create visualization
     df_filtered = df.head(top_n)
