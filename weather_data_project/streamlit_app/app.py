@@ -109,11 +109,11 @@ with st.sidebar.expander("Table Configuration", expanded=False):
     st.write(f"**Hourly Trends:** {table_names['hourly']}")
     st.write(f"**Daily Summary:** {table_names['daily']}")
     
-    override_tables = st.checkbox("Override table names", value=False)
-    if override_tables:
-        table_names['descriptions'] = st.text_input("Weather Descriptions Table", value=table_names['descriptions'])
-        table_names['hourly'] = st.text_input("Hourly Trends Table", value=table_names['hourly'])
-        table_names['daily'] = st.text_input("Daily Summary Table", value=table_names['daily'])
+    # override_tables = st.checkbox("Override table names", value=False)
+    # if override_tables:
+    #     table_names['descriptions'] = st.text_input("Weather Descriptions Table", value=table_names['descriptions'])
+    #     table_names['hourly'] = st.text_input("Hourly Trends Table", value=table_names['hourly'])
+    #     table_names['daily'] = st.text_input("Daily Summary Table", value=table_names['daily'])
 
 # Database connection function
 @st.cache_resource
