@@ -16,7 +16,7 @@ Summarized daily weather metrics including average, minimum, and maximum tempera
 | avg_temp       | FLOAT     | Average temperature (°C)                         |
 | min_temp       | FLOAT     | Minimum temperature (°C)                         |
 | max_temp       | FLOAT     | Maximum temperature (°C)                         |
-| avg_wind_speed | FLOAT     | Average wind speed (km/h)                        |
+| avg_wind_speed | FLOAT     | Average wind speed (m/s)                        |
 
 ---
 
@@ -29,7 +29,7 @@ Hourly aggregated weather facts for temperature and wind analysis.
 |------------|-----------|---------------------------------------|
 | hour       | TIMESTAMP | Weather timestamp truncated to hour   |
 | avg_temp   | FLOAT     | Average temperature per hour (°C)     |
-| avg_wind   | FLOAT     | Average wind speed per hour (km/h)    |
+| avg_wind   | FLOAT     | Average wind speed per hour (m/s)    |
 
 ---
 
@@ -55,7 +55,7 @@ Cleaned staging table from the raw weather data source, including deduplicated e
 | city              | TEXT      | Name of the city                                         |
 | temperature       | FLOAT     | Temperature recorded (°C)                                |
 | weather_description | TEXT    | Textual weather description                              |
-| wind_speed        | TEXT      | Wind speed in km/h (raw form)                            |
+| wind_speed        | TEXT      | Wind speed in m/s (raw form)                            |
 | weather_time_local| TIMESTAMP | Original time from API                                   |
 | inserted_at_local | TIMESTAMP | Local insertion time based on UTC offset                |
 
