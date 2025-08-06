@@ -12,11 +12,11 @@ Summarized daily weather metrics including average, minimum, and maximum tempera
 | Column         | Data Type | Description                                      |
 |----------------|-----------|--------------------------------------------------|
 | date           | DATE      | Truncated local weather time (day-level)         |
-| observations   | INT       | Number of weather records for that day          |
+| observations   | INT       | Number of weather records for that day           |
 | avg_temp       | FLOAT     | Average temperature (°C)                         |
 | min_temp       | FLOAT     | Minimum temperature (°C)                         |
 | max_temp       | FLOAT     | Maximum temperature (°C)                         |
-| avg_wind_speed | FLOAT     | Average wind speed (m/s)                        |
+| avg_wind_speed | FLOAT     | Average wind speed (m/s)                         |
 
 ---
 
@@ -29,7 +29,7 @@ Hourly aggregated weather facts for temperature and wind analysis.
 |------------|-----------|---------------------------------------|
 | hour       | TIMESTAMP | Weather timestamp truncated to hour   |
 | avg_temp   | FLOAT     | Average temperature per hour (°C)     |
-| avg_wind   | FLOAT     | Average wind speed per hour (m/s)    |
+| avg_wind   | FLOAT     | Average wind speed per hour (m/s)     |
 
 ---
 
@@ -55,9 +55,9 @@ Cleaned staging table from the raw weather data source, including deduplicated e
 | city              | TEXT      | Name of the city                                         |
 | temperature       | FLOAT     | Temperature recorded (°C)                                |
 | weather_description | TEXT    | Textual weather description                              |
-| wind_speed        | TEXT      | Wind speed in m/s (raw form)                            |
+| wind_speed        | TEXT      | Wind speed in m/s (raw form)                             |
 | weather_time_local| TIMESTAMP | Original time from API                                   |
-| inserted_at_local | TIMESTAMP | Local insertion time based on UTC offset                |
+| inserted_at_local | TIMESTAMP | Local insertion time based on UTC offset                 |
 
 ---
 
