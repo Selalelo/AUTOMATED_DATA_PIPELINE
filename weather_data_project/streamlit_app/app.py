@@ -75,7 +75,7 @@ with st.sidebar.expander("Database Settings", expanded=False):
     st.write(f"**Database:** {config['database']}")
     st.write(f"**Username:** {config['username']}")
     st.write(f"**Schema:** {config['schema']}")
-    st.write("**Password:** " + ("✅ Loaded from .env" if config['password'] else "❌ Not found in .env"))
+    st.write("**Password:** " + ("✅ Loaded from secrets.toml" if config['password'] else "❌ Not found in .env"))
     
     # Option to override connection settings (for development)
     st.markdown("---")
