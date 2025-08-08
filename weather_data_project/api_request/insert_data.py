@@ -75,15 +75,11 @@ def insert_records(conn, data):
     try:
         cursor = conn.cursor()
         
-        temp_celsius = (data["temp"] - 32) * 5/9
-        print(f"Temperature: {temp_celsius}°C")
-        
         utc_time = datetime.fromtimestamp(data["ts"], tz=timezone.utc)
         
         # Convert to local time and get offset
         local_time = utc_time.astimezone(ZoneInfo(data["timezone"]))
         utc_offset = local_time.strftime("%z")  # "+0200"
-        utc_offset = f"{utc_offset[:3]}:{utc_offset[3:]}"  # "+02:00"
         
         cursor.execute(
             """ 
@@ -98,10 +94,10 @@ def insert_records(conn, data):
             ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 data["city_name"],
-                temp_celsius,
+                data["temp"]
                 data["weather"]["description"],
                 str(data["wind_spd"]),
-                utc_time,
+                data["ob_time"],
                 local_time, 
                 utc_offset
             )
