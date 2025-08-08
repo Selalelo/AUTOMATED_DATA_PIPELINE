@@ -124,6 +124,7 @@ def main():
         
         # Fetch weather data
         data = get_current_weather()
+        data = data['data'][0]
         if not data:
             print("Failed to fetch weather data, exiting")
             return
