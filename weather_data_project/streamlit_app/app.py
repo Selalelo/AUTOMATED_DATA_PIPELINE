@@ -223,7 +223,7 @@ def create_sample_data():
     return descriptions, hourly, daily
 
 # Main title
-st.title("🌤️ Weather Analytics Dashboard")
+st.title("🌤️ Johannesburg Weather Analytics Dashboard")
 st.markdown("Real-time analysis of weather patterns from dbt models")
 
 # Environment status check
