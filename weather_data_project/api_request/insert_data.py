@@ -1,6 +1,7 @@
 import psycopg2
 from api_request import get_current_weather
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import os
 
 def get_db_connection_params():
@@ -54,7 +55,7 @@ def create_table(conn):
                 weather_description TEXT,
                 wind_speed TEXT,
                 time TIMESTAMP,
-                time_inserted TIMESTAMP DEFAULT NOW(),
+                time_inserted TIMESTAMP,
                 utc_offset TEXT
             );
             """
@@ -73,17 +74,17 @@ def insert_records(conn, data):
         
     try:
         cursor = conn.cursor()
-
-        # Handle temperature conversion - check if it's already in Celsius or Fahrenheit
-        temp = (data["main"]["temp"] - 32)*5/9
-        # If the API returns Celsius (which it should with units=metric), use it directly
-        temp_celsius = temp
         
+        temp_celsius = (data["temp"] - 32) * 5/9
         print(f"Temperature: {temp_celsius}°C")
         
-        # Create timezone-aware UTC datetime
-        utc_time = datetime.fromtimestamp(data["dt"], tz=timezone.utc) 
-
+        utc_time = datetime.fromtimestamp(data["ts"], tz=timezone.utc)
+        
+        # Convert to local time and get offset
+        local_time = utc_time.astimezone(ZoneInfo(data["timezone"]))
+        utc_offset = local_time.strftime("%z")  # "+0200"
+        utc_offset = f"{utc_offset[:3]}:{utc_offset[3:]}"  # "+02:00"
+        
         cursor.execute(
             """ 
             INSERT INTO dev.raw_weather_data(
@@ -94,18 +95,19 @@ def insert_records(conn, data):
                 time,
                 time_inserted,
                 utc_offset 
-            ) VALUES (%s, %s, %s, %s, %s, NOW(), %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
-                data["name"],
+                data["city_name"],
                 temp_celsius,
-                data["weather"][0]["description"],
-                str(data["wind"]["speed"]),
-                utc_time, 
-                str(data["timezone"]/3600) 
+                data["weather"]["description"],
+                str(data["wind_spd"]),
+                utc_time,
+                local_time, 
+                utc_offset
             )
         )
         conn.commit()
-        print(f"Data inserted successfully for {data['name']}")
+        print(f"Data inserted successfully for {data['city_name']}")
     except psycopg2.Error as e:
         print(f'Failed to insert data into the database: {e}')
         raise
@@ -121,7 +123,7 @@ def main():
         print(f"Starting weather data pipeline for {city}")
         
         # Fetch weather data
-        data = fetch_weather(city)
+        data = get_current_weather()
         if not data:
             print("Failed to fetch weather data, exiting")
             return
