@@ -94,7 +94,7 @@ def insert_records(conn, data):
             ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 data["city_name"],
-                data["temp"]
+                data["temp"],
                 data["weather"]["description"],
                 str(data["wind_spd"]),
                 data["ob_time"],
