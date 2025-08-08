@@ -11,9 +11,9 @@ def get_current_weather(lat=None, lon=None, units="metric", lang="en"):
     if lon is None:
         lon = os.getenv('WEATHER_LON', '28.045556')   # Johannesburg lon
     
-    url = os.getenv('WEATHER_API_URL')
+    url = os.getenv('API_URL')
     if not url:
-        raise Exception("WEATHER_API_URL environment variable not set")
+        raise Exception("API_URL environment variable not set")
     
     querystring = {"lat": lat, "lon": lon, "units": units, "lang": lang}
     
