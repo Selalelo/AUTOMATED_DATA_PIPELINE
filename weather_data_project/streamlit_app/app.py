@@ -23,7 +23,7 @@ except ImportError:
 
 # Set page config
 st.set_page_config(
-    page_title="Weather Analytics Dashboard",
+    page_title="Johannesburg Weather Analytics Dashboard",
     page_icon="🌤️",
     layout="wide",
     initial_sidebar_state="expanded"
