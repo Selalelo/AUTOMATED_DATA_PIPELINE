@@ -1,5 +1,5 @@
 import psycopg2
-from api_request import fetch_weather
+from api_request import get_current_weather
 from datetime import datetime, timezone
 import os
 
