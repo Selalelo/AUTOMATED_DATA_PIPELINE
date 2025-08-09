@@ -1,30 +1,33 @@
-import requests
 import os
+import requests
 
-def get_current_weather(lat=None, lon=None, units="metric", lang="en"):
-    api_key = os.getenv('RAPIDAPI_KEY')
-    if not api_key:
-        raise Exception("RAPIDAPI_KEY environment variable not set")
-    
-    if lat is None:
-        lat = os.getenv('WEATHER_LAT', '-26.204444')  # Johannesburg lat
-    if lon is None:
-        lon = os.getenv('WEATHER_LON', '28.045556')   # Johannesburg lon
-    
-    url = os.getenv('API_URL')
-    if not url:
-        raise Exception("API_URL environment variable not set")
-    
-    querystring = {"lat": lat, "lon": lon, "units": units, "lang": lang}
-    
+def get_current_weather(location: str):
+    """
+    Fetch current weather data for a given location.
+    API credentials and URL are stored in environment variables:
+    - API_URL
+    - API_KEY
+    """
+    url = os.getenv("API_URL")
+    api_key = os.getenv("API_KEY")
+
+    if not url or not api_key:
+        raise EnvironmentError("API_URL or API_KEY not set in environment variables.")
+
     headers = {
         "x-rapidapi-key": api_key,
-        "x-rapidapi-host": "weatherbit-v1-mashape.p.rapidapi.com"
+        "x-rapidapi-host": "cities-temperature.p.rapidapi.com"
     }
-    
+    params = {"location": location}
+
     try:
-        response = requests.get(url, headers=headers, params=querystring)
-        response.raise_for_status()
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()  # Raise HTTPError for bad responses
         return response.json()
-    except requests.exceptions.RequestException as e:
-        raise Exception(f"Weather API request failed: {e}")
+    except requests.exceptions.Timeout:
+        print("Request timed out.")
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+    return None

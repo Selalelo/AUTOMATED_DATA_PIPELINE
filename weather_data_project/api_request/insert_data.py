@@ -3,6 +3,7 @@ from api_request import get_current_weather
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import os
+import pytz
 
 def get_db_connection_params():
     """Get database connection parameters from environment variables"""
@@ -75,12 +76,6 @@ def insert_records(conn, data):
     try:
         cursor = conn.cursor()
         
-        utc_time = datetime.fromtimestamp(data["ts"], tz=timezone.utc)
-        
-        # Convert to local time and get offset
-        local_time = utc_time.astimezone(ZoneInfo(data["timezone"]))
-        utc_offset = local_time.strftime("%z")  # "+0200"
-        
         cursor.execute(
             """ 
             INSERT INTO dev.raw_weather_data(
@@ -93,17 +88,17 @@ def insert_records(conn, data):
                 utc_offset 
             ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
-                data["city_name"],
-                data["temp"],
-                data["weather"]["description"],
-                str(data["wind_spd"]),
-                data["ob_time"],
-                local_time, 
-                utc_offset
+                data["location"],
+                data["temperature"],
+                data["description"],
+                str(data["wind_speed"]),
+                data["timestamp"],
+                data["timestamp"],
+                data["utc_offset"]
             )
         )
         conn.commit()
-        print(f"Data inserted successfully for {data['city_name']}")
+        print(f"Data inserted successfully for {data['location']}")
     except psycopg2.Error as e:
         print(f'Failed to insert data into the database: {e}')
         raise
@@ -112,6 +107,15 @@ def insert_records(conn, data):
         print(f'Available data keys: {list(data.keys()) if data else "No data"}')
         raise
 
+def add_time_info(data: dict, timezone_name="Africa/Johannesburg") -> dict:
+    tz = pytz.timezone(timezone_name)
+    now = datetime.now(tz)
+
+    data["timestamp"] = now.isoformat()
+    data["utc_offset"] = now.strftime("%z")  # e.g. "+0200"
+
+    return data
+
 def main():
     city = 'Johannesburg'
     conn = None
@@ -119,12 +123,13 @@ def main():
         print(f"Starting weather data pipeline for {city}")
         
         # Fetch weather data
-        data = get_current_weather()
-        data = data['data'][0]
+        data = get_current_weather(city)
         if not data:
             print("Failed to fetch weather data, exiting")
             return
-            
+        
+        data = add_time_info(data)
+
         # Connect to database
         conn = connect_db()
         
