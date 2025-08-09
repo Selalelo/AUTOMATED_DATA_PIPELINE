@@ -3,7 +3,7 @@
 }}
 
 SELECT
-  LOWEWER(weather_description),
+  LOWER(weather_description),
   COUNT(*) AS frequency
 FROM {{ ref('staging') }}
 GROUP BY weather_description
