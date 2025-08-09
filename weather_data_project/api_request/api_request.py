@@ -8,8 +8,8 @@ def get_current_weather(location: str):
     - API_URL
     - API_KEY
     """
-    url = os.getenv("RAPIDAPI_URL")
-    api_key = os.getenv("API_KEY")
+    url = os.getenv("API_URL")
+    api_key = os.getenv("RAPIDAPI_KEY")
 
     if not url or not api_key:
         raise EnvironmentError("API_URL or API_KEY not set in environment variables.")
